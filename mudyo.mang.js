@@ -152,9 +152,6 @@ var app = angular.module("app", [])
 								calcWidth = parseInt($col.attr("width"))
 											+ (e.clientX - def.resize.data("startX"))
 
-							console.log($col)
-							console.log(parseInt($col.attr("width")) + " + " + e.clientX + " - " + def.resize.data("startX") + " = " + (e.clientX - def.resize.data("startX")))
-
 							if(calcWidth < 15) {
 								calcWidth = 15
 							}
