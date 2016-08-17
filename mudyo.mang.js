@@ -1,5 +1,5 @@
 var app = angular.module("app", [])
-	.directive("mudyoGrid", function($compile) {
+	.directive("mang", function($compile) {
 		return {
 			restrict: "C",
 			controller: function($scope) {
@@ -10,29 +10,29 @@ var app = angular.module("app", [])
 						vertical: 0,
 						height: "100%"
 					}, $element.data()),
-					html = $("<div class='mudyo-grid'>"
-						+ "<div class='mudyo-grid-t'><div><table><colgroup/><thead/></table></div></div>"
-						+ "<div class='mudyo-grid-h'><div><table></table></div></div>"
-						+ "<div class='mudyo-grid-l'><div><table><colgroup/><tbody/></table></div></div>"
-						+ "<div class='mudyo-grid-m'><div/></div>"
+					html = $("<div class='mudyo-mang'>"
+						+ "<div class='mudyo-mang-t'><div><table><colgroup/><thead/></table></div></div>"
+						+ "<div class='mudyo-mang-h'><div><table></table></div></div>"
+						+ "<div class='mudyo-mang-l'><div><table><colgroup/><tbody/></table></div></div>"
+						+ "<div class='mudyo-mang-m'><div/></div>"
 						+ "</div>"),
 					elem = {
 						nest:	$element.parent(),
-						top:	$(">.mudyo-grid-t", html),
-						left:	$(">.mudyo-grid-l", html),
-						head:	$(">.mudyo-grid-h", html),
-						main:	$(">.mudyo-grid-m", html),
+						top:	$(">.mudyo-mang-t", html),
+						left:	$(">.mudyo-mang-l", html),
+						head:	$(">.mudyo-mang-h", html),
+						main:	$(">.mudyo-mang-m", html),
 						table:	{
-							top:	$(">.mudyo-grid-t table", html),
-							left:	$(">.mudyo-grid-l table", html),
-							head:	$(">.mudyo-grid-h table", html),
+							top:	$(">.mudyo-mang-t table", html),
+							left:	$(">.mudyo-mang-l table", html),
+							head:	$(">.mudyo-mang-h table", html),
 							main:	$element.after(html)
 						},
 						shell:	{
-							top:	$(">.mudyo-grid-t>div", html),
-							left:	$(">.mudyo-grid-l>div", html),
-							head:	$(">.mudyo-grid-h>div", html),
-							main:	$(">.mudyo-grid-m>div", html).append($element.removeClass("mudyo-grid"))
+							top:	$(">.mudyo-mang-t>div", html),
+							left:	$(">.mudyo-mang-l>div", html),
+							head:	$(">.mudyo-mang-h>div", html),
+							main:	$(">.mudyo-mang-m>div", html).append($element.removeClass("mudyo-grid"))
 						}
 					},
 					colsize = function(){
@@ -78,7 +78,7 @@ var app = angular.module("app", [])
 								$tbody.append($tr.clone().append($cells))
 							})
 
-							elem.pillar = $("<a class='mudyo-grid-pillar'/>")
+							elem.pillar = $("<a class='mudyo-mang-pillar'/>")
 							html.append(elem.pillar)
 						}
 					},
@@ -108,7 +108,7 @@ var app = angular.module("app", [])
 						}
 
 						for(i = 0; i < colsize; i++) {
-							var handler = $("<a class='mudyo-grid-resize-handler'/>")
+							var handler = $("<a class='mudyo-mang-resize-handler'/>")
 								.data({
 									bind: col.eq(i),
 									index: i
@@ -169,7 +169,7 @@ var app = angular.module("app", [])
 							initResizable()
 						})
 
-						elem.sizeHandler = html.find(".mudyo-grid-resize-handler")
+						elem.sizeHandler = html.find(".mudyo-mang-resize-handler")
 					},
 					initSize = function() {
 						html.height(def.height)

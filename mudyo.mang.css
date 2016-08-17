@@ -1,4 +1,4 @@
-.mudyo-grid {
+.mudyo-mang {
 	background-color: #f1f1f1;
 	clear: both;
 	outline: 1px solid #ddd;
@@ -6,22 +6,22 @@
 	position: relative;
 	width: 100%;
 }
-.mudyo-grid>div {
+.mudyo-mang >div {
 	float: left;
 	position: relative;
 }
-.mudyo-grid>div>div {
+.mudyo-mang >div>div {
 	display: table;
 }
 
-.mudyo-grid table {
+.mudyo-mang table {
 	background-color: #fff;
 	border-collapse: collapse;
 	border-spacing: 0;
 	table-layout: fixed;
 }
-.mudyo-grid th,
-.mudyo-grid td {
+.mudyo-mang th,
+.mudyo-mang td {
 	border: solid #ccc;
 	border-width: 0 1px 1px 0;
 	line-height: 1em;
@@ -30,30 +30,30 @@
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
-.mudyo-grid td[data-bind*='|number'] {
+.mudyo-mang td[data-bind*='|number'] {
 	text-align: right;
 }
-.mudyo-grid td[data-unit]::before {
+.mudyo-mang td[data-unit]::before {
 	color: #aaa;
 	content: attr(data-unit)' ';
 	font-size: .8em;
 }
 
-.mudyo-grid-t {
+.mudyo-mang-t {
 	z-index: 2;
 }
-.mudyo-grid-l {
+.mudyo-mang-l {
 	clear: both;
 	z-index: 1;
 }
-.mudyo-grid-m {
+.mudyo-mang-m {
 	overflow: auto;
 }
-.mudyo-grid-m>div {
+.mudyo-mang-m>div {
 	padding: 0 100px 100px 0;
 }
 
-.mudyo-grid-pillar {
+.mudyo-mang-pillar {
 	background-color: #ddd;
 	display: block;
 	height: 100%;
@@ -63,7 +63,7 @@
 	width: 3px;
 	z-index: 3;
 }
-.mudyo-grid-resize-handler {
+.mudyo-mang-resize-handler {
 	border: 2px solid transparent;
 	cursor: ew-resize;
 	display: block;
@@ -74,7 +74,7 @@
 	width: 1px;
 	z-index: 3;
 }
-.mudyo-grid-resize-handler.handling {
+.mudyo-mang-resize-handler.handling {
 	background-color: #ccc;
 	border-color: #f1f1f1
 }
