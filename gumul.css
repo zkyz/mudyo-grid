@@ -1,4 +1,4 @@
-.mudyo-mang {
+.mudyo-gumul {
 	background-color: #f1f1f1;
 	clear: both;
 	outline: 1px solid #ddd;
@@ -6,54 +6,61 @@
 	position: relative;
 	width: 100%;
 }
-.mudyo-mang >div {
+.mudyo-gumul>div {
 	float: left;
 	position: relative;
 }
-.mudyo-mang >div>div {
+.mudyo-gumul>div>div {
 	display: table;
 }
 
-.mudyo-mang table {
+.mudyo-gumul-l>div,
+.mudyo-gumul-m>div {
+	min-height: 100px;
+}
+
+.mudyo-gumul table {
 	background-color: #fff;
-	border-collapse: collapse;
+	border-collapse: separate;
 	border-spacing: 0;
 	table-layout: fixed;
 }
-.mudyo-mang th,
-.mudyo-mang td {
+.mudyo-gumul th,
+.mudyo-gumul td {
 	border: solid #ccc;
 	border-width: 0 1px 1px 0;
+	height: 19px;
 	line-height: 1em;
 	overflow: hidden;
 	padding: 5px;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
-.mudyo-mang td[data-bind*='|number'] {
+.mudyo-gumul td[data-bind*='|number'] {
 	text-align: right;
 }
-.mudyo-mang td[data-unit]::before {
+.mudyo-gumul td[data-unit]::before {
 	color: #aaa;
 	content: attr(data-unit)' ';
 	font-size: .8em;
 }
 
-.mudyo-mang-t {
+.mudyo-gumul-t {
 	z-index: 2;
 }
-.mudyo-mang-l {
+.mudyo-gumul-l {
 	clear: both;
 	z-index: 1;
 }
-.mudyo-mang-m {
+.mudyo-gumul-m {
+	float: right !important;
 	overflow: auto;
 }
-.mudyo-mang-m>div {
+.mudyo-gumul-m>div {
 	padding: 0 100px 100px 0;
 }
 
-.mudyo-mang-pillar {
+.mudyo-gumul-pillar {
 	background-color: #ddd;
 	display: block;
 	height: 100%;
@@ -63,7 +70,7 @@
 	width: 3px;
 	z-index: 3;
 }
-.mudyo-mang-resize-handler {
+.mudyo-gumul-resize-handler {
 	border: 2px solid transparent;
 	cursor: ew-resize;
 	display: block;
@@ -74,7 +81,8 @@
 	width: 1px;
 	z-index: 3;
 }
-.mudyo-mang-resize-handler.handling {
+.mudyo-gumul-resize-handler.handling {
 	background-color: #ccc;
 	border-color: #f1f1f1
 }
+
