@@ -12,6 +12,7 @@
 }
 .mudyo-gumul>div>div {
 	display: table;
+	position: relative;
 }
 
 .mudyo-gumul-l>div,

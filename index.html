@@ -13,7 +13,9 @@
 <body ng-app="app">
 <div class="container">
 	<table class="gumul"
-		   data-jsonp="//filltext.com/?rows=20&id={index}&email={email}&username={username}&password={randomString|5}&fname={firstName}&lname={lastName}&tel={phone|format}&fund={numberRange|-10000to1000000000}&birthday={date}&address={streetAddress}&city={city}&state={usState|abbr}&zip={zip}&age={randomNumber|100}&callback=JSON_CALLBACK">
+		   data-fix="3"
+		   data-url="//filltext.com/?rows=20&id={index}&email={email}&username={username}&password={randomString|5}&fname={firstName}&lname={lastName}&tel={phone|format}&fund={numberRange|-10000to1000000000}&birthday={date}&address={streetAddress}&city={city}&state={usState|abbr}&zip={zip}&age={randomNumber|100}&callback=JSON_CALLBACK"
+		   data-http="jsonp">
 		<colgroup>
 			<col width="30">
 			<col width="60">
@@ -35,11 +37,11 @@
 		<tr>
 			<td data-bind="id"></td>
 			<td data-bind="email"></td>
-			<td data-bind="username"></td>
-			<td data-bind="fund|number"></td>
+			<td data-bind="birthday" data-type="date" data-format="yyyy-MM-dd"></td>
+			<td data-bind="id"></td>
+			<td data-bind="fund" data-type="number"></td>
 			<td data-bind="address"></td>
 			<td data-bind="city"></td>
-			<td data-bind="birthday"></td>
 		</tr>
 		</tbody>
 	</table>
@@ -48,7 +50,7 @@
 <hr/>
 
 <div class="container">
-	<table class="gumul" data-vertical="3" data-height="400">
+	<table class="gumul" data-fix="3" data-height="400">
 	<colgroup>
 		<col width="30">
 		<col width="60">

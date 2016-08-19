@@ -1,6 +1,6 @@
 angular
 .module("mudyo.gumul", [])
-.directive("gumul", function($compile, $http) {
+.directive("gumul", function($filter, $http) {
     return {
         restrict: "C",
         scope: true,
@@ -9,10 +9,12 @@ angular
                 // mixes default settings and custom settings
                 def = $.extend({
                     url: null,
-                    jsonp: null,
-                    vertical: 0,
+                    http: "post",
+                    fix: 0,
                     height: "100%",
-                    cellHeight: 30
+                    cellHeight: 30,
+                    startedIndex: 0,
+                    endedIndex: 0
                 }, $element.data()),
 
                 // create HTML structure
@@ -41,7 +43,8 @@ angular
                         left: $(">.mudyo-gumul-l>div", html),
                         head: $(">.mudyo-gumul-h>div", html),
                         main: $(">.mudyo-gumul-m>div", html).append($element)
-                    }
+                    },
+                    shape: {}
                 },
 
                 // calculate column size
@@ -62,43 +65,68 @@ angular
                     return width
                 },
 
-                // angular data binding
-                initNg = function () {
-                    if (!def.jsonp && !def.url) return
+                initPosition = function () {
+                    elem.table.head.append($element.find("thead"));
+                    elem.shape.main = $element.find("tbody").clone(true);
 
-                    $element.find("tbody").attr("ng-repeat", "_i in list")
-                        .find("[data-bind]").each(function (i, p) {
-                        p.setAttribute("ng-bind", "_i." + p.getAttribute("data-bind"))
-                    })
-
-                    if (def.vertical) {
-                        elem.table.left.find("tbody").attr("ng-repeat", "_i in list")
+                    if (def.url) {
+                        $element.find("tbody").remove();
                     }
 
-                    var compile = $compile(html.find("tbody"));
-                    compile($scope)
-                },
+                    if (def.fix) {
+                        var length,
+                            $tbody,
+                            $tr = $("<tr/>");
 
-                initPosition = function () {
-                    elem.table.head.append(elem.table.main.find("thead"))
+                        elem.shape.left = elem.shape.main.clone(true);
+                        elem.shape.left.find("tr").each(function (i, tr) {
+                            length = 0;
+                            $("th,td", tr).each(function (j, thd) {
+                                length += parseInt(thd.getAttribute("colSpan") || 1);
 
-                    if (def.vertical) {
-                        var $thead = elem.table.top.find(">thead"),
-                            $tbody = elem.table.left.find(">tbody"),
-                            $tr = $("<tr/>"),
-                            $cells = null
+                                if (length > def.fix) {
+                                    $(thd).remove()
+                                }
+                            })
+                        });
+
+                        elem.shape.main.find("tr").each(function (i, tr) {
+                            length = 0;
+                            $("th,td", tr).each(function (j, thd) {
+                                length += parseInt(thd.getAttribute("colSpan") || 1);
+
+                                if (length <= def.fix) {
+                                    $(thd).remove()
+                                }
+                                else {
+                                    return false
+                                }
+                            })
+                        });
 
                         elem.table.head.find("tr").each(function (i, tr) {
-                            $cells = $("th,td", tr).slice(0, def.vertical)
-                            $thead.append($tr.clone().append($cells))
-                        })
+                            elem.table.top.find("thead").append(
+                                $tr.clone().append(
+                                    $("th,td", tr).slice(0, def.fix)
+                                )
+                            )
+                        });
 
-                        elem.table.main.find("tr").each(function (i, tr) {
-                            $cells = $("th,td", tr).slice(0, def.vertical)
-                            $tbody.append($tr.clone().append($cells))
-                        })
+                        elem.table.main.find("tbody").each(function (i, tbody) {
+                            $tbody = $("<tbody/>");
 
-                        elem.pillar = $("<a class='mudyo-gumul-pillar'/>")
+                            $("tr", tbody).each(function (j, tr) {
+                                $tbody.append(
+                                    $tr.clone().append(
+                                        $("th,td", tr).slice(0, def.fix)
+                                    )
+                                )
+                            });
+
+                            elem.table.left.append($tbody)
+                        });
+
+                        elem.pillar = $("<a class='mudyo-gumul-pillar'/>");
                         html.append(elem.pillar)
                     }
                 },
@@ -123,9 +151,9 @@ angular
 
                     elem.table.head.append(colgroup.clone(true))
 
-                    if (def.vertical) {
-                        elem.table.top.find(">colgroup").append(elem.table.head.find("col").slice(0, def.vertical))
-                        elem.table.left.find(">colgroup").append(col.slice(0, def.vertical))
+                    if (def.fix) {
+                        elem.table.top.find(">colgroup").append(elem.table.head.find("col").slice(0, def.fix))
+                        elem.table.left.find(">colgroup").append(col.slice(0, def.fix))
                     }
 
                     for (i = 0; i < getColumnSize; i++) {
@@ -145,7 +173,7 @@ angular
                                 elem.resizeTarget = $this
                             })
 
-                        if (i < def.vertical) {
+                        if (i < def.fix) {
                             handler.css("z-index", 3)
                         }
 
@@ -167,9 +195,9 @@ angular
                             if (!elem.resizeTarget) return
 
                             var index = elem.resizeTarget.data("index"),
-                                aboveTable = index < def.vertical ? elem.table.top : elem.table.head,
-                                belowTable = index < def.vertical ? elem.table.left : elem.table.main,
-                                $col = $("col", aboveTable).eq(index - def.vertical),
+                                aboveTable = index < def.fix ? elem.table.top : elem.table.head,
+                                belowTable = index < def.fix ? elem.table.left : elem.table.main,
+                                $col = $("col", aboveTable).eq(index - def.fix),
                                 calcWidth = parseInt($col.attr("width"))
                                     + (e.clientX - elem.resizeTarget.data("startX"))
 
@@ -178,7 +206,7 @@ angular
                             }
 
                             $col.attr("width", calcWidth)
-                            $("col", belowTable).eq(index - def.vertical).attr("width", calcWidth)
+                            $("col", belowTable).eq(index - def.fix).attr("width", calcWidth)
 
                             elem.resizeTarget.removeClass("handling")
                             elem.resizeTarget = null
@@ -196,7 +224,7 @@ angular
 
                     html.height(def.height)
 
-                    if (!def.vertical) {
+                    if (!def.fix) {
                         elem.table.head.width(getWidth(elem.table.top))
                         elem.table.main.width(elem.table.head.width())
                         elem.head.width(html.width())
@@ -205,9 +233,11 @@ angular
                     }
                     else {
                         var width = [
-                            getWidth(elem.table.top),
-                            getWidth(elem.table.head)
-                        ]
+                                getWidth(elem.table.top),
+                                getWidth(elem.table.head)
+                            ];
+
+                        def.mainHeight = html.height() - elem.head.height();
 
                         elem.table.top.width(width[0])
                         elem.table.left.width(width[0])
@@ -219,41 +249,43 @@ angular
                         elem.head.width(html.width() - width[0])
                         elem.main.width(html.width() - width[0])
 
-                        elem.left.height(html.height() - elem.head.height())
-                        elem.main.height(elem.left.height())
+                        elem.left.height(def.mainHeight)
+                        elem.main.height(def.mainHeight)
 
                         elem.pillar.css("left", width[0])
                     }
                 },
                 initScrollEvent = function () {
-                    if (!def.vertical) {
+                    if (!def.fix) {
                         elem.main.on("scroll", function (e) {
-                            elem.head.css("margin-left", this.scrollLeft * -1)
-                            elem.sizeHandler.css("margin-left", this.scrollLeft * -1)
-                        })
+                            elem.head.css("margin-left", this.scrollLeft * -1);
+                            elem.sizeHandler.css("margin-left", this.scrollLeft * -1);
+                        });
 
                         elem.head.on("wheel", function (e) {
-                            elem.main.scrollTop(elem.main.scrollTop() + e.originalEvent.deltaY)
+                            elem.main.scrollTop(elem.main.scrollTop() + e.originalEvent.deltaY);
                             //e.preventDefault()
-                        })
+                        });
                     }
                     else {
                         elem.main.on("scroll", function (e) {
-                            elem.shell.head.css("margin-left", this.scrollLeft * -1)
-                            elem.shell.left.css("margin-top", this.scrollTop * -1)
-                            elem.sizeHandler.slice(def.vertical).css("margin-left", this.scrollLeft * -1)
-                        })
+                            elem.shell.head.css("left", this.scrollLeft * -1);
+                            elem.shell.left.css("top" , this.scrollTop * -1);
+                            elem.sizeHandler.slice(def.fix).css("margin-left", this.scrollLeft * -1);
+                        });
 
                         elem.head.add(elem.top).add(elem.left).on("wheel", function (e) {
-                            elem.main.scrollTop(elem.main.scrollTop() + e.originalEvent.deltaY)
-                            elem.main.scrollLeft(elem.main.scrollLeft() + e.originalEvent.deltaX)
+                            elem.main.scrollTop(elem.main.scrollTop() + e.originalEvent.deltaY);
+                            elem.main.scrollLeft(elem.main.scrollLeft() + e.originalEvent.deltaX);
                             //e.preventDefault()
-                        })
+                        });
                     }
 
-                    elem.main.on("scroll", function (e) {
-                        $scope.render();
-                    })
+                    if (def.url) {
+                        elem.main.on("scroll", function (e) {
+                            render(this.scrollTop);
+                        });
+                    }
                 },
                 initResizable = function () {
                     var left = 0
@@ -262,44 +294,116 @@ angular
                             col = $handler.data("bind")
                         $handler.css("left", left += parseInt(col.attr("width")))
                     })
-                };
+                },
+                render = function(scrollTop, force) {
+                    var startIndex = parseInt(scrollTop / def.cellHeight),
+                        endIndex = startIndex + Math.ceil((def.mainHeight + def.cellHeight) / def.cellHeight),
+                        i;
+
+                    if (endIndex > $scope.data.length) {
+                        endIndex = $scope.data.length
+                    }
+
+                    if(force || startIndex !== def.startedIndex) {
+                        console.log(startIndex + "(" + def.startedIndex +") / " + endIndex + "(" + def.endedIndex + ")");
+
+                        if (startIndex < def.startedIndex) {
+                            removeRow(def.startedIndex - (endIndex - def.endedIndex), def.endedIndex);
+
+                            for (i = def.startedIndex - 1; i >= startIndex; i--) {
+                                createRow($scope.data[i], true)
+                            }
+                        }
+                        else {
+                            removeRow(0, startIndex - def.startedIndex);
+
+                            for (i = def.endedIndex; i < endIndex; i++) {
+                                createRow($scope.data[i])
+                            }
+                        }
+
+                        elem.shell.main.css("margin-top", def.cellHeight * startIndex);
+
+                        if (def.fix) {
+                            elem.shell.left.css("margin-top", def.cellHeight * startIndex);
+                        }
+                    }
+
+                    def.startedIndex = startIndex;
+                    def.endedIndex = endIndex;
+                },
+                createRow = function(data, insertBefore) {
+                    var shape = [
+                            elem.shape.main.clone(true)
+                        ],
+                        getValue = function(data, name, type, format) {
+                            if(!data || !name) {
+                                return ""
+                            }
+
+                            if (type) {
+                                if (format) {
+                                    return $filter(type)(data[name], format)
+                                }
+
+                                return $filter(type)(data[name])
+                            }
+
+                            return data[name]
+                        };
+
+                    shape[0].find("[data-bind]").each(function(i, td) {
+                        td.innerHTML = getValue(data, td.getAttribute("data-bind"), td.getAttribute("data-type"), td.getAttribute("data-format"))
+                    });
+
+                    if (insertBefore) {
+                        elem.table.main.find("tbody:eq(0)").before(shape[0]);
+                    }
+                    else {
+                        elem.table.main.append(shape[0]);
+                    }
+
+                    if (def.fix) {
+                        shape[1] = elem.shape.left.clone(true);
+                        shape[1].find("[data-bind]").each(function(i, td) {
+                            td.innerHTML = getValue(data, td.getAttribute("data-bind"), td.getAttribute("data-type"), td.getAttribute("data-format"))
+                        });
+
+                        if (insertBefore) {
+                            elem.table.left.find("tbody:eq(0)").before(shape[1]);
+                        }
+                        else {
+                            elem.table.left.append(shape[1]);
+                        }
+                    }
+                },
+                removeRow = function(start, end) {
+                    console.log("remove " + start + ", " + end);
+
+                    elem.table.main.find("tbody").slice(start, end).remove();
+
+                    if (def.fix) {
+                        elem.table.left.find("tbody").slice(start, end).remove();
+                    }
+                }
+                ;
 
             $scope.def = def;
+            $scope.elem = elem;
             $scope.data = [];
-            $scope.render = function() {
-                var cst = elem.main.scrollTop(),
-                    startIndex = parseInt(cst / def.cellHeight);
-
-                if (!def.dataStartIndex || startIndex !== def.dataStartIndex) {
-                    var mainHeight = elem.main.height(),
-                        endIndex = startIndex + Math.ceil(mainHeight / 30);
-
-                    def.dataStartIndex = startIndex;
-
-                    $scope.list = $scope.data.slice(startIndex, endIndex);
-                    $scope.$watch("list", function() {
-                        $scope.$apply(function(){
-                            elem.shell.main.css("margin-top", def.cellHeight * startIndex)
-
-                            console.log(cst + mainHeight, $scope.data.length * def.cellHeight)
-                            if (cst + mainHeight > $scope.data.length * def.cellHeight) {
-                                $scope.load()
-                            }
-                        })
-                    })
-                }
-            };
             $scope.load = function () {
                 var fn = function (data) {
+                    if ($scope.data.length === 0) {
+                        $scope.data = $scope.data.concat(data);
+                        render(0, true);
+                        return
+                    }
+
                     $scope.data = $scope.data.concat(data);
-                    $scope.render();
                 };
 
-                if (def.jsonp) {
-                    $http.jsonp(def.jsonp).success(fn)
-                }
-                else if (def.url) {
-                    $http.post(def.url).success(fn)
+                if (def.url) {
+                    $http[def.http](def.url).success(fn)
                 }
             };
 
@@ -308,9 +412,11 @@ angular
             initSize();
             initResizable();
             initScrollEvent();
-            initNg();
 
-            $scope.load()
+            $scope.load();
+            $scope.$watch("data", function(){
+
+            })
         }
 
     }
