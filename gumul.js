@@ -305,21 +305,19 @@ angular
                     }
 
                     if(force || startIndex !== def.startedIndex) {
-                        console.log(startIndex + "(" + def.startedIndex +") / " + endIndex + "(" + def.endedIndex + ")");
-
                         if (startIndex < def.startedIndex) {
-                            removeRow(def.startedIndex - (endIndex - def.endedIndex), def.endedIndex);
-
                             for (i = def.startedIndex - 1; i >= startIndex; i--) {
                                 createRow($scope.data[i], true)
                             }
+
+                            removeRow(endIndex - startIndex, $scope.data.length);
                         }
                         else {
-                            removeRow(0, startIndex - def.startedIndex);
-
                             for (i = def.endedIndex; i < endIndex; i++) {
                                 createRow($scope.data[i])
                             }
+
+                            removeRow(0, startIndex - def.startedIndex);
                         }
 
                         elem.shell.main.css("margin-top", def.cellHeight * startIndex);
@@ -327,10 +325,15 @@ angular
                         if (def.fix) {
                             elem.shell.left.css("margin-top", def.cellHeight * startIndex);
                         }
-                    }
 
-                    def.startedIndex = startIndex;
-                    def.endedIndex = endIndex;
+                        def.startedIndex = startIndex;
+                        def.endedIndex = endIndex;
+
+                        console.log(def.loading + " / " + def.endedIndex + " / " + $scope.data.length)
+                        if(!def.loading && (def.endedIndex === $scope.data.length)) {
+                            $scope.load()
+                        }
+                    }
                 },
                 createRow = function(data, insertBefore) {
                     var shape = [
@@ -378,8 +381,6 @@ angular
                     }
                 },
                 removeRow = function(start, end) {
-                    console.log("remove " + start + ", " + end);
-
                     elem.table.main.find("tbody").slice(start, end).remove();
 
                     if (def.fix) {
@@ -392,18 +393,28 @@ angular
             $scope.elem = elem;
             $scope.data = [];
             $scope.load = function () {
+                console.log("loading...");
+
                 var fn = function (data) {
-                    if ($scope.data.length === 0) {
-                        $scope.data = $scope.data.concat(data);
-                        render(0, true);
-                        return
-                    }
+                    var forceRendering = $scope.data.length === 0;
 
                     $scope.data = $scope.data.concat(data);
+
+                    setTimeout(function() {
+                        def.loading = false;
+                        render(elem.main.scrollTop(), forceRendering);
+                    }, 300)
                 };
 
                 if (def.url) {
-                    $http[def.http](def.url).success(fn)
+                    def.loading = true;
+                    $http[def.http](def.url)
+                        .success(fn)
+                        .error(function(){
+                            setTimeout(function() {
+                                def.loading = false
+                            }, 300)
+                        })
                 }
             };
 
