@@ -14,7 +14,12 @@ angular
                     height: "100%",
                     cellHeight: 30,
                     startedIndex: 0,
-                    endedIndex: 0
+                    endedIndex: 0,
+                    page: {
+                        index: 1,
+                        rowPerPage: 20
+                    },
+                    finished: false
                 }, $element.data()),
 
                 // create HTML structure
@@ -329,9 +334,12 @@ angular
                         def.startedIndex = startIndex;
                         def.endedIndex = endIndex;
 
-                        console.log(def.loading + " / " + def.endedIndex + " / " + $scope.data.length)
                         if(!def.loading && (def.endedIndex === $scope.data.length)) {
-                            $scope.load()
+                            $scope.load();
+                        }
+
+                        if(def.finished) {
+                            html.addClass("mudyo-gumul-finished");
                         }
                     }
                 },
@@ -393,26 +401,34 @@ angular
             $scope.elem = elem;
             $scope.data = [];
             $scope.load = function () {
-                console.log("loading...");
-
                 var fn = function (data) {
-                    var forceRendering = $scope.data.length === 0;
-
                     $scope.data = $scope.data.concat(data);
 
                     setTimeout(function() {
                         def.loading = false;
-                        render(elem.main.scrollTop(), forceRendering);
+                        def.page.index += 1;
+                        def.finished = def.page.rowPerPage > data.length;
+                        render(elem.main.scrollTop(), true);
+
+                        // FIXME delete after test
+                        if(def.page.index > 3) {
+                            def.finished = true;
+                        }
+
+                        html.removeClass("mudyo-gumul-loading");
                     }, 300)
                 };
 
-                if (def.url) {
+                if (def.url && !def.finished && !def.loading) {
                     def.loading = true;
+                    html.addClass("mudyo-gumul-loading");
+
                     $http[def.http](def.url)
                         .success(fn)
                         .error(function(){
                             setTimeout(function() {
-                                def.loading = false
+                                def.loading = false;
+                                html.removeClass("mudyo-gumul-loading");
                             }, 300)
                         })
                 }
@@ -425,9 +441,6 @@ angular
             initScrollEvent();
 
             $scope.load();
-            $scope.$watch("data", function(){
-
-            })
         }
 
     }

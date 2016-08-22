@@ -6,6 +6,16 @@
 	position: relative;
 	width: 100%;
 }
+.mudyo-gumul.mudyo-gumul-loading {
+	cursor: wait;
+	opacity: .5;
+}
+.mudyo-gumul.mudyo-gumul-finished::after {
+	bottom: 0;
+	content: "-끝-";
+	left: 10px;
+	position: absolute;
+}
 .mudyo-gumul>div {
 	float: left;
 	position: relative;
