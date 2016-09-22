@@ -1,0 +1,27 @@
+{
+  "name": "gumul",
+  "version": "0.1.0",
+  "description": "",
+  "main": "gumul.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zkyz/mudyo-gumul.git"
+  },
+  "author": "hellozkyz@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zkyz/mudyo-gumul/issues"
+  },
+  "homepage": "https://github.com/zkyz/mudyo-gumul#readme",
+  "devDependencies": {
+    "browser-sync": "^2.16.0",
+    "gulp-clean-css": "^2.0.12",
+    "gulp-concat": "^2.6.0",
+    "gulp-minify-html": "^1.0.6",
+    "gulp-sass": "^2.3.2",
+    "gulp-uglify": "^2.0.0"
+  }
+}

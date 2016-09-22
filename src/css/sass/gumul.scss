@@ -1,0 +1,138 @@
+.mudyo-gumul {
+	background-color: #f1f1f1;
+	clear: both;
+	outline: 1px solid #ddd;
+	overflow: hidden;
+	position: relative;
+	width: 99%;
+
+	&::after {
+		bottom: 0;
+		color: #d5d5d5;
+		content: "-끝-";
+		left: 10px;
+		position: absolute;
+		text-shadow: 1px 1px 0 #fff;
+	}
+
+	&.mudyo-gumul-finished::after {
+		content: "-끝-";
+	}
+
+	&.mudyo-gumul-error::after {
+	    content: attr(data-error-code) " " attr(data-error-text);
+	    z-index: 4;
+	}
+	&.mudyo-gumul-loading {
+	    cursor: wait;
+	    opacity: .5;
+	}
+
+	>div {
+		float: left;
+		position: relative;
+
+		>div {
+			display: table;
+			position: relative;
+		}
+	}
+
+	table {
+		background-color: #fff;
+		border-collapse: collapse;
+		border-spacing: 0;
+		table-layout: fixed;
+	}
+	tbody.selected {
+	    background-color: rgba(240, 240, 240, .5);
+	}
+
+	th, td {
+		border: solid #ccc;
+		border-width: 0 1px 1px 0;
+	    box-sizing: border-box;
+	    font-size: 14px;
+		height: 30px;
+	    line-height: 30px;
+		overflow: hidden;
+		padding: 0 5px;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	td[data-type*='number'] {
+		text-align: right;
+	}
+	td[data-unit]::before {
+		color: #aaa;
+		content: attr(data-unit)' ';
+		font-size: .8em;
+	}
+	td.editing {
+	    overflow: visible;
+	    position: relative;
+	}
+	td.editing>.editor {
+	    background-color: #f7f7f7;
+	    font-size: inherit;
+	    box-sizing: border-box;
+	    height: 2em;
+	    left: 0;
+	    line-height: 1em;
+	    min-height: 30px;
+	    position: absolute;
+	    top: 0;
+	    width: 100%;
+	}
+}
+
+
+.mudyo-gumul-l>div,
+.mudyo-gumul-m>div {
+	min-height: 100px;
+}
+
+.mudyo-gumul-t {
+	z-index: 2;
+}
+.mudyo-gumul-l {
+	clear: both;
+	z-index: 1;
+}
+.mudyo-gumul-h {
+    left: 2px;
+}
+.mudyo-gumul-m {
+	float: right !important;
+    margin-right: -2px;
+	min-height: 50px;
+	overflow: auto;
+}
+.mudyo-gumul-m>div {
+	padding: 0 100px 100px 0;
+}
+
+.mudyo-gumul-pillar {
+	background-color: #ccc;
+	display: block;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	width: 1px;
+	z-index: 3;
+}
+.mudyo-gumul-resize-handler {
+	border: 2px solid transparent;
+	cursor: ew-resize;
+	display: block;
+	height: 100%;
+	margin-left: -2px;
+	position: absolute;
+	top: 0;
+	width: 1px;
+	z-index: 3;
+}
+.mudyo-gumul-resize-handler.handling {
+	background-color: #ccc;
+	border-color: #f1f1f1
+}
